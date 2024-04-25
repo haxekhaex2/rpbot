@@ -17,5 +17,7 @@ async def on_message(message):
 
 	if message.content.startswith('$hello'):
 		await message.channel.send('Hello!')
+		for category in message.guild.categories:
+			await message.channel.send(category.name)
 
 client.run(os.environ["TOKEN"])
