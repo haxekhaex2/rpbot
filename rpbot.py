@@ -1,6 +1,10 @@
 import discord
 import json
+import random
 import os
+
+MOVES = ["jab", "cross", "hook", "uppercut", # Punches.
+"roundhouse", "front kick", "side kick", "back kick"] # Kicks
 
 class rpbot(discord.Client):
 	# Array of server handlers.
@@ -39,6 +43,10 @@ class server_handler:
 		# Ignore message if it was sent by the bot.
 		if message.author == client.user:
 			return
+
+		# Combo generator.
+		if message.content.startswith("$combo"):
+			await message.channel.send(random.choice(MOVES))
 
 		# Ensure that sillybot is being used by an admin.
 		if message.content.startswith("$"):
@@ -125,6 +133,9 @@ class server_handler:
 			await repost.edit(suppress = True)
 
 	async def update_directory(self):
+		if self.directory is None:
+			return
+
 		info = str()
 
 		if self.category is None:
