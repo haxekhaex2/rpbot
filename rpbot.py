@@ -46,7 +46,19 @@ class server_handler:
 
 		# Combo generator.
 		if message.content.startswith("$combo"):
-			await message.channel.send(random.choice(MOVES))
+			argument = message.content.split(" ", 1)
+			if(len(argument) < 2):
+				await message.channel.send("no argument specified!", delete_after = 5)
+				return
+			argument = int(argument[1])
+
+			info = str()
+			for index in range(0, argument):
+				info += random.choice(MOVES)
+				if(index < argument - 1):
+					info += ", "
+
+			await message.channel.send(info)
 
 		# Ensure that sillybot is being used by an admin.
 		if message.content.startswith("$"):
