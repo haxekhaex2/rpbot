@@ -102,12 +102,13 @@ class server_handler:
 			info += "hello! i'm sillybot. i watch a given channel category and repost its messages into a given channel.\n" 
 			info += "here are my available commands:\n"
 			info += "$help - print this message to chat\n"
-			info += "$category - change the channel category from which to scrape posts\n"
-			info += "$channel - change the channel into which to repost messages and files\n"
+			info += "$category <category name>- change the channel category from which to scrape posts\n"
+			info += "$channel <channel name> - change the channel into which to repost messages and files\n"
 			info += "$directory - create a message wherein i hold a live directory of all channels and threads within the category\n"
 			info += "$save - save my state, including category, channel, and directory\n"
 			info += "$load - loads state, mostly for debugging\n"
-			info += "$dump - dump everything i know into chat"
+			info += "$dump - dump everything i know into chat\n"
+			info += "$combo <length> - print a sequence of attacks to chat."
 			await message.channel.send(info)
 			return
 
