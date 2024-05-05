@@ -28,6 +28,11 @@ class rpbot(discord.Client):
 		await self.handlers[message.guild.id].process_message(message)
 		await self.handlers[message.guild.id].update_directory()
 
+
+	async def on_message_delete(self, message):
+		await self.check_handler(message.guild.id)
+		await self.handlers[message.guild.id].process_deletion(message)
+
 class server_handler:
 	server = None
 	category = None
@@ -144,8 +149,16 @@ class server_handler:
 			for attachment in message.attachments:
 				images.append(await attachment.to_file(spoiler = attachment.is_spoiler()))
 
-			repost = await self.channel.send(content = "in %s:\n%s" % (message.jump_url, message.content), files = images)
+			repost = await self.channel.send(content = "%s %s" % (message.jump_url, message.content), files = images)
 			await repost.edit(suppress = True)
+
+	async def process_deletion(self, message):
+		if self.channel is None:
+			return
+			
+		async for repost in self.channel.history(limit = 16):
+			if repost.content.startswith(message.jump_url):
+				await repost.delete()
 
 	async def update_directory(self):
 		if self.directory is None:
