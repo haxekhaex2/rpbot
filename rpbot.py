@@ -124,23 +124,25 @@ class server_handler:
 		# Create directory listing.
 		if message.content.startswith("$directory"):
 			self.directory = await message.channel.send("<3")
-			await 	self.update_directory()
+			await self.update_directory()
 
 		# Save state.
 		if message.content.startswith("$save"):
 			await self.write_state()
+			await message.channel.send("saved state to file", delete_after = 5)
 
 		# Load state.
 		if message.content.startswith("$load"):
 			if os.path.isfile(str(self.server.id) + ".json"):
 				with open(str(self.server.id) + ".json", "r", encoding = "utf-8") as file_handle:
 					await self.load_state(json.load(file_handle))
+			await message.channel.send("loaded state from file")
 
 		# Repost into the given channel if a message was sent anywhere in a category. 
 		if self.category is not None and self.channel is not None and message.channel.category == self.category:
 			images = []
 			for attachment in message.attachments:
-				images.append(await attachment.to_file())
+				images.append(await attachment.to_file(spoiler = attachment.is_spoiler()))
 
 			repost = await self.channel.send(content = "in %s:\n%s" % (message.jump_url, message.content), files = images)
 			await repost.edit(suppress = True)
