@@ -152,6 +152,15 @@ class server_handler:
 			repost = await self.channel.send(content = "%s %s" % (message.jump_url, message.content), files = images)
 			await repost.edit(suppress = True)
 
+		# Reconstruct channel.
+		if message.content.startswith("$reconstruct"):
+			if self.channel is None:
+				await message.channel.send("no given channel!")
+				return
+
+			async for repost in self.channel.history(limit = None):
+				await repost.delete()
+
 	async def process_deletion(self, message):
 		if self.channel is None:
 			return
