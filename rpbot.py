@@ -159,7 +159,30 @@ class server_handler:
 				return
 
 			async for repost in self.channel.history(limit = None):
-				await repost.delete()
+				try:
+					await repost.delete()
+				except:
+					print("can't delete message: %s" % (repost.jump_url))
+
+			messages = []
+
+			for channel in self.category.channels:
+				async for old_message in channel.history(limit = None):
+					messages.append(old_message)
+
+				for thread in channel.threads:
+					async for old_message in thread.history(limit = None):
+						messages.append(old_message)
+
+			messages.sort(key = lambda old_message: old_message.created_at)
+
+			for old_message in messages:
+				images = []
+				for attachment in old_message.attachments:
+					images.append(await attachment.to_file(spoiler = attachment.is_spoiler()))
+
+				repost = await self.channel.send(content = "%s %s" % (old_message.jump_url, old_message.content), files = images)
+				await repost.edit(suppress = True)
 
 	async def process_deletion(self, message):
 		if self.channel is None:
