@@ -21,7 +21,7 @@ class rpbot(discord.Client):
 		if not server in self.handlers:
 			self.handlers[server] = server_handler(discord.utils.get(self.guilds, id = server))
 			await self.handlers[server].load_state()
-			
+
 
 	async def on_message(self, message):
 		await self.check_handler(message.guild.id)
@@ -167,12 +167,14 @@ class server_handler:
 			messages = []
 
 			for channel in self.category.channels:
-				async for old_message in channel.history(limit = None):
-					messages.append(old_message)
-
-				for thread in channel.threads:
-					async for old_message in thread.history(limit = None):
+				if hasattr(channel, "history"):
+					async for old_message in channel.history(limit = None):
 						messages.append(old_message)
+
+				if hasattr(channel, "threads"):
+					for thread in channel.threads:
+						async for old_message in thread.history(limit = None):
+							messages.append(old_message)
 
 			messages.sort(key = lambda old_message: old_message.created_at)
 
@@ -187,7 +189,7 @@ class server_handler:
 	async def process_deletion(self, message):
 		if self.channel is None:
 			return
-			
+
 		async for repost in self.channel.history(limit = 16):
 			if repost.content.startswith(message.jump_url):
 				await repost.delete()
@@ -214,7 +216,7 @@ class server_handler:
 					info += "└───" + thread.jump_url + "\n"
 				info += "\n"
 
-		await self.directory.edit(content = info)	
+		await self.directory.edit(content = info)
 
 	async def write_state(self):
 		with open("data/" + str(self.server.id) + ".json", "w", encoding = "utf-8") as file_handle:
