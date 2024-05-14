@@ -33,6 +33,10 @@ class rpbot(discord.Client):
 		await self.check_handler(message.guild.id)
 		await self.handlers[message.guild.id].process_deletion(message)
 
+	async def on_message_edit(self, message):
+		await self.check_handler(message.guild.id)
+		await self.handlers[message.guild.id].process_edit(message)
+
 class server_handler:
 	server = None
 	category = None
@@ -64,6 +68,8 @@ class server_handler:
 					info += ", "
 
 			await message.channel.send(info)
+
+			return
 
 		# Ensure that sillybot is being used by an admin.
 		if message.content.startswith("$"):
