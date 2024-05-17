@@ -48,6 +48,19 @@ class server_handler:
 		print("handler created for %s." % (server.name))
 		return
 
+	# If new_message is None, send a new message reflecting old_message.
+	# If new_message is an existing message, edit it to reflect old_message. 
+	async def reflect_message(self, new_message, old_message):
+		images = []
+		for attachment in old_message.attachments:
+			images.append(await attachment.to_file(spoiler = attachment.is_spoiler()))
+
+		if new_message is None:
+			new_message = await self.channel.send(content = "%s %s" % (old_message.jump_url, old_message.content), files = images)
+			new_message.edit(suppress = True)
+		else
+			new_message.edit(content = "%s %s" % (old_message.jump_url, old_message.content), files = images, suppress = True)
+
 	async def process_message(self, message):
 		# Ignore message if it was sent by the bot.
 		if message.author == client.user:
