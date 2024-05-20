@@ -45,6 +45,10 @@ class server_handler:
 
 	def __init__(self, server):
 		self.server = server
+		self.category = None
+		self.channel = None
+		self.directory = None
+
 		print("handler created for %s." % (server.name))
 		return
 
@@ -58,7 +62,7 @@ class server_handler:
 		if new_message is None:
 			new_message = await self.channel.send(content = "%s %s" % (old_message.jump_url, old_message.content), files = images)
 			new_message.edit(suppress = True)
-		else
+		else:
 			new_message.edit(content = "%s %s" % (old_message.jump_url, old_message.content), files = images, suppress = True)
 
 	async def process_message(self, message):
