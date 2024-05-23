@@ -5,7 +5,7 @@ import asyncio
 from server_handler import server_handler
 
 class rpbot(discord.Client):
-	handlers = list()
+	handlers = dict()
 
 	def __init__(self, intents):
 		super().__init__(intents = intents)
@@ -15,11 +15,9 @@ class rpbot(discord.Client):
 
 		promises = list()
 		for guild in self.guilds:
-			handler = server_handler(self)
-			self.handlers.append(handler)
-			path = "data/%s.txt" % (guild.id)
-			promises.append(handler.load(path))
-			print("collected promise for server %s" % (guild.name))
+			handler = server_handler(self, guild)
+			self.handlers[guild.id] = handler
+			promises.append(handler.load())
 
 		await asyncio.gather(* promises)
 		return
